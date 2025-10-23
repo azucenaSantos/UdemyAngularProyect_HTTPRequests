@@ -1,3 +1,11 @@
+<!--aqui tras escuchar los cambios de la signal error, mostramos el error-->
+@if (error()) {
+<!--si hay camabios en la signal de error, mostramos el componente de la modal-->
+<app-error-modal
+  title="An error ocurred!"
+  [message]="error()"
+></app-error-modal>
+}
 <header>
   <img src="logo.png" alt="Stylized globe" />
   <h1>PlacePicker</h1>

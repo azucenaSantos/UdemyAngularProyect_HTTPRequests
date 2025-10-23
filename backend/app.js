@@ -41,10 +41,13 @@ app.get("/user-places", async (req, res) => {
   res.status(200).json({ places });
 });
 
-//Usaremos ahora esta ruta para enviar datos al back cuando hacemos click en una de las imagenes que 
+//Usaremos ahora esta ruta para enviar datos al back cuando hacemos click en una de las imagenes que
 //mostramos en la interfaz tras hacer el get
 app.put("/user-places", async (req, res) => {
   const placeId = req.body.placeId;
+
+  //return res.status(500).json(); //error de prueba para el modal de error
+  //cuando se intente añadir un lugar favorito saltará un modal con el error --> MANEJO DE ERRORES VISTO!
 
   const fileContent = await fs.readFile("./data/places.json");
   const placesData = JSON.parse(fileContent);

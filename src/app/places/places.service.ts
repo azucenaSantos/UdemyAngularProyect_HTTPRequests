@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, map, tap, throwError } from 'rxjs';
 
 import { Place } from './place.model';
+import { ErrorService } from '../shared/shared/error.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +12,8 @@ export class PlacesService {
   private userPlaces = signal<Place[]>([]);
 
   private httpClient = inject(HttpClient);
+
+  private errorService = inject(ErrorService);
 
   loadedUserPlaces = this.userPlaces.asReadonly();
 
@@ -50,7 +53,7 @@ export class PlacesService {
       //Con lo siguiente los places que son los favoritos se actualizan segun se hace "añade" uno nuevo
       //this.userPlaces.update((prevPlaces) => [...prevPlaces, place]); //copia de los anteriores places + el nuevo place
       this.userPlaces.set([...prevPlaces, place]); //otra forma de actualizar
-    }//en caso contrario, que si que haya ya un id igual a algun prev, no se añadirá el place
+    } //en caso contrario, que si que haya ya un id igual a algun prev, no se añadirá el place
 
     return this.httpClient
       .put('http://localhost:3000/user-places', {
@@ -62,6 +65,12 @@ export class PlacesService {
         catchError((error) => {
           this.userPlaces.set(prevPlaces); //rollback en caso de error a los previous places que hemos almacenado de antes
           //para acceder a ellos y evitar errores
+
+          //Ahora vamos añadir al momento del error un modal que indique el error al usuario
+          //y pueda actuar ante el
+          //Llamamos al servicio que controla el mostrar las modales
+          this.errorService.showError('Failed to store selected place.');
+
           return throwError(() => new Error('Failed to store selected place.'));
         })
       );
