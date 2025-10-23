@@ -76,7 +76,25 @@ export class PlacesService {
       );
   }
 
-  removeUserPlace(place: Place) {}
+  removeUserPlace(place: Place) {
+    //Ahora queremos actualizar los lugares y que desaparezca aquel sobre el que se hizo click
+    const prevPlaces = this.userPlaces();
+    if (prevPlaces.some((p) => p.id === place.id)) {
+      //comprobacion inversa a la de añadir, ahora debemos añadir a los prev el place sobre el que se hizo click
+      this.userPlaces.set(prevPlaces.filter((p) => p.id !== place.id));
+    }
+
+    //Codigo para eliminar un place de los los lugares favoritos
+    return this.httpClient
+      .delete(`http://localhost:3000/user-places/${place.id}`)
+      .pipe(
+        catchError((error) => {
+          this.userPlaces.set(prevPlaces);
+          this.errorService.showError('Failed to remove the selected place.');
+          return throwError(() => new Error('Failed to remove the selected place.'));
+        })
+      );
+  }
 
   //Ahora tenemos el codigo del fetch de los places separado para poder
   //llamarlo desde las otras funciones publicas de este servicio

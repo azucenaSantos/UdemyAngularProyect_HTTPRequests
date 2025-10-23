@@ -1,7 +1,7 @@
 <app-places-container title="Your Favorite Places">
   <!--mostramos los places favoritos tras hacer la request-->
   @if (favoritePlaces()) {
-  <app-places [places]="favoritePlaces()!" />
+  <app-places [places]="favoritePlaces()!" (selectPlace)="onRemovePlace($event)"/>
 
   } @else if (favoritePlaces().length === 0) {
   <p class="fallback-text">Unfortunately, no places could be found.</p>
