@@ -1,0 +1,19 @@
+<app-places-container title="Available Places">
+  @if (isFetching() && !error()) {
+  <!--buscando sin error-->
+  <p class="fallback-text">Fetching available places...</p>
+  } @if (error()) {
+  <!--si tenemos error en la peticion-->
+  <p class="fallback-text">{{ error() }}</p>
+  }
+  <!--comprobamos si tenemos places(no es undefined)-->
+  @if (places()) {
+  <app-places [places]="places()!" (selectPlace)="onSelectPlace($event)" />
+  <!--el componente emite cuando se hace click en él el place sobre el que hacemos click, almacenamos el place-->
+  <!--escuchamos al selectPlace del componente-->
+  } @else if (places()?.length === 0) {
+  <!--aqui ya controlamos cuando no tenemos places, pero arriba con el 
+    isFetching controlamos cuando aun no los hemos obtenido todos para que se muestre un mensaje-->
+  <p class="fallback-text">Unfortunately, no places could be found.</p>
+  }
+</app-places-container>
