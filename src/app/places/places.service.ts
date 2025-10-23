@@ -45,9 +45,12 @@ export class PlacesService {
   addPlaceToUserPlaces(place: Place) {
     const prevPlaces = this.userPlaces();
 
-    //Con lo siguiente los places que son los favoritos se actualizan segun se hace "añade" uno nuevo
-    //this.userPlaces.update((prevPlaces) => [...prevPlaces, place]); //copia de los anteriores places + el nuevo place
-    this.userPlaces.set([...prevPlaces, place]); //otra forma de actualizar
+    //Evitar añadir un lugar ya añadido antes (si en el prev NO hay uno con id igual, añadimos al prev el seleccionado)
+    if (!prevPlaces.some((p) => p.id === place.id)) {
+      //Con lo siguiente los places que son los favoritos se actualizan segun se hace "añade" uno nuevo
+      //this.userPlaces.update((prevPlaces) => [...prevPlaces, place]); //copia de los anteriores places + el nuevo place
+      this.userPlaces.set([...prevPlaces, place]); //otra forma de actualizar
+    }//en caso contrario, que si que haya ya un id igual a algun prev, no se añadirá el place
 
     return this.httpClient
       .put('http://localhost:3000/user-places', {
@@ -58,7 +61,7 @@ export class PlacesService {
         //favoritos aunque luego no se guarde realmente al recargar
         catchError((error) => {
           this.userPlaces.set(prevPlaces); //rollback en caso de error a los previous places que hemos almacenado de antes
-          //para acceder a ellos y evitar errores 
+          //para acceder a ellos y evitar errores
           return throwError(() => new Error('Failed to store selected place.'));
         })
       );
